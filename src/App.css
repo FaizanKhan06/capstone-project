@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+}
+
+/* HTML:  */
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid lightblue;
+    border-right-color: #1976d2;
+    animation: l2 1s infinite linear;
+}
+
+@keyframes l2 {
+    to {
+        transform: rotate(1turn)
+    }
+}
