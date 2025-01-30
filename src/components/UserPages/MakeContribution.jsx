@@ -4,55 +4,46 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { retrieveUser } from '../auth';
 import getAllUrls from '../urlData';
 
-function MakeRequest({ handleOpenSnackbar }) {
+function MakeContribution({ handleOpenSnackbar }) {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const location = useLocation();
     const { communityId, email, maxAmount } = location.state || {};
-    let [requestData, setRequestData] = useState({
-        email: email, communityId: communityId, requestReason: "", amount: 0
+    const [amountDetails, setAmountDetails] = useState({ amount: 100.00, interest: 15.00, total: 115.00 })
+    let [contributionData, setContributionData] = useState({
+        email: email, communityId: communityId, transactionType: "Credit", amount: amountDetails.amount, interestAmount: amountDetails.interest
     });
-    function handleChangeInput(event) {
-        setRequestData({
-            ...requestData,
-            [event.target.name]: event.target.value,
-        });
-
-    }
 
     function handleRequestFormSubmit(event) {
         setLoading(true);
         event.preventDefault();
-        if (requestData.amount > 0 && requestData.amount <= maxAmount) {
-            fetch("http://localhost:5000/api/requests", {
-                method: "POST",
-                headers: {
-                    'Authorization': 'Bearer ' + retrieveUser().jwtToken,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestData),
+        fetch("http://localhost:5000/api/transactions", {
+            method: "POST",
+            headers: {
+                'Authorization': 'Bearer ' + retrieveUser().jwtToken,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(contributionData),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.text().then((text) => (text ? JSON.parse(text) : {}));
             })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.text().then((text) => (text ? JSON.parse(text) : {}));
-                })
-                .then((data) => {
-                    console.log(data);
-                    handleOpenSnackbar("Request Sent");
-                    navigate(getAllUrls(retrieveUser().roleId).dashboard);
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error("Error during login:", error);
-                    handleOpenSnackbar("An error occurred. Please try again.");
-                    setLoading(false);
-                });
-        } else {
-            handleOpenSnackbar("Amount Invalid");
-        }
-        console.log(requestData);
+            .then((data) => {
+                console.log(data);
+                handleOpenSnackbar("Contribution Recorded");
+                navigate(getAllUrls(retrieveUser().roleId).communityView, { state: { communityId: communityId } });
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error during login:", error);
+                handleOpenSnackbar("An error occurred. Please try again.");
+                setLoading(false);
+            });
+
+        console.log(contributionData);
         setLoading(false);
     }
 
@@ -63,9 +54,9 @@ function MakeRequest({ handleOpenSnackbar }) {
                 alignItems: 'center',
             }}
         >
-            <Container component="main" maxWidth="lg">
+            <Container component="main" maxWidth="xs">
                 <Typography variant="h5" align="center" sx={{ paddingY: "10px" }}>
-                    Make Request
+                    Make Contribution
                 </Typography>
                 <Typography align="center">
                     You can only make one request | The amount can only be equal to or lesser than ₹{maxAmount}.
@@ -77,27 +68,31 @@ function MakeRequest({ handleOpenSnackbar }) {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
-                                type='text'
-                                name='requestReason'
-                                label="Request Reason"
+                                type='number'
+                                label="Contribution Amount"
                                 fullWidth
-                                multiline
-                                rows={9}
+                                value={amountDetails.amount}
                                 variant="outlined"
-                                value={requestData.requestReason}
-                                onChange={handleChangeInput}
                                 required
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 type='number'
-                                name='amount'
-                                label="Amount"
+                                label="Interest Amount"
                                 fullWidth
+                                value={amountDetails.interest}
                                 variant="outlined"
-                                value={requestData.amount}
-                                onChange={handleChangeInput}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                type='number'
+                                label="Total Amount"
+                                fullWidth
+                                value={amountDetails.total}
+                                variant="outlined"
                                 required
                             />
                         </Grid>
@@ -109,7 +104,7 @@ function MakeRequest({ handleOpenSnackbar }) {
                                 type="submit"
                                 loading={loading}
                             >
-                                Make Request
+                                Make Contribution
                             </Button>
                         </Grid>
                     </Grid>
@@ -119,4 +114,4 @@ function MakeRequest({ handleOpenSnackbar }) {
     )
 }
 
-export default MakeRequest
+export default MakeContribution

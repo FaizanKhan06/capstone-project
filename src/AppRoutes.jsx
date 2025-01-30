@@ -13,7 +13,8 @@ import CreateCommunity from './components/CommunityHeadPages/CreateCommunity';
 import CreateRules from './components/CommunityHeadPages/CreateRules';
 import CommunityJoin from './components/UserPages/CommunityJoin';
 import CommunityView from './components/UserPages/CommunityView';
-import MakeRequest from './components/CommunityHeadPages/MakeRequest';
+import MakeRequest from './components/UserPages/MakeRequest';
+import MakeContribution from './components/UserPages/MakeContribution';
 
 const AppRoutes = ({ setLoginToTrue, handleOpenSnackbar }) => {
     const navigate = useNavigate();
@@ -52,6 +53,7 @@ const AppRoutes = ({ setLoginToTrue, handleOpenSnackbar }) => {
             <Route path="/User/CommunityJoin" element={<CommunityJoin handleOpenSnackbar={handleOpenSnackbar} />} />
             <Route path="/User/CommunityView" element={<CommunityView handleOpenSnackbar={handleOpenSnackbar} />} />
             <Route path="/User/MakeRequest" element={<MakeRequest handleOpenSnackbar={handleOpenSnackbar} />} />
+            <Route path="/User/MakeContribution" element={<MakeContribution handleOpenSnackbar={handleOpenSnackbar} />} />
             <Route path="/Admin/Dashboard" element={<AdminDashboard />} />
             <Route path="/CommunityHead/Dashboard" element={<CommunityHeadDashboard handleOpenSnackbar={handleOpenSnackbar} />} />
             <Route path="/CommunityHead/CreateCommunity" element={<CreateCommunity handleOpenSnackbar={handleOpenSnackbar} />} />

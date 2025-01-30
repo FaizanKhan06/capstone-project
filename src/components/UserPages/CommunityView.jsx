@@ -58,6 +58,9 @@ function CommunityView({ handleOpenSnackbar }) {
     function handleMakeRequest() {
         navigate(getAllUrls(retrieveUser().roleId).makeRequest, { state: { communityId: communityDetails.communityId, email: retrieveUser().email, maxAmount: communityDetails.currentAmount } });
     }
+    function handleMakeContribution() {
+        navigate(getAllUrls(retrieveUser().roleId).makeContribution, { state: { communityId: communityDetails.communityId, email: retrieveUser().email, maxAmount: communityDetails.currentAmount } });
+    }
     return (
         <>
             {
@@ -109,7 +112,7 @@ function CommunityView({ handleOpenSnackbar }) {
 
                         <Grid container spacing={2} sx={{ marginBottom: 2 }}>
                             <Grid item xs={12} sm={6}>
-                                <Button variant='contained' fullWidth>Make Contribution</Button>
+                                <Button variant='contained' onClick={handleMakeContribution} fullWidth>Make Contribution</Button>
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Button variant='contained' onClick={handleMakeRequest} color="error" fullWidth>Make Request</Button>

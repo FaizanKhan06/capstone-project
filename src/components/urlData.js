@@ -9,6 +9,7 @@ let allUrls = {
         communityJoin: "/User/CommunityJoin",
         communityView: "/User/CommunityView",
         makeRequest: "/User/MakeRequest",
+        makeContribution: "/User/MakeContribution",
     },
     3: {
         roleName: "CommunityHead",

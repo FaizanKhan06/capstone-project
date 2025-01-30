@@ -51,7 +51,7 @@ function TransactionComponent({ communityId }) {
             {
                 transactions !== null && (transactions.map((transaction) => (
                     <Box key={transaction.transactionId}>
-                        <Typography>{transaction.user.firstName} has made a {transaction.transactionType === "Credit" ? <span style={{ color: "green" }}>Contribution</span> : <span style={{ color: "red" }}>Given</span>} of ₹{transaction.amount}</Typography>
+                        <Typography>{transaction.user.firstName} has {transaction.transactionType === "Credit" && ("made a")} {transaction.transactionType === "Credit" ? <span style={{ color: "green" }}>contribution</span> : <span style={{ color: "red" }}>borrowed</span>} {transaction.transactionType === "Debit" && ("a sum")} of ₹{transaction.amount + transaction.interestAmount}</Typography>
                     </Box>
                 )))
             }

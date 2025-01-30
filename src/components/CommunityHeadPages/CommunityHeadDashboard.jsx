@@ -15,6 +15,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
     let [communityDetails, setCommunityDetails] = useState(null);
     let [communityMemberships, setCommunityMemberships] = useState([]);
     let [loading, setLoading] = useState(false);
+    let [transactionKey, setTransactionKey] = useState(0); // Key to trigger re-render
     useEffect(() => {
         setLoading(true);
         getCommunityDetails();
@@ -22,8 +23,6 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
     }, []);
     useEffect(() => {
         getCommunityJoinRequests();
-        // getCommunityMembers();
-        // getCommunityMoneyRequests();
     }, [communityDetails])
     function getCommunityDetails() {
         fetch("http://localhost:5000/api/communities/communityHead/" + retrieveUser().email, {
@@ -148,7 +147,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
             })
             .then((data) => {
                 setCommunityMemberships(communityMemberships.filter((eachmembership) => eachmembership.communityMembershipId !== membership.communityMembershipId));
-                // setMembersList([...membersList, membership]);
+                getCommunityDetails();
             })
             .catch((error) => {
                 if (error.message === "404 Error") {
@@ -160,6 +159,11 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
                 setLoading(false);
             });
     };
+    function setChangeAmount() {
+        getCommunityDetails();
+        setTransactionKey(prevKey => prevKey + 1);
+        //Rerender TransactionComponent
+    }
     return (
         <>
             {
@@ -227,7 +231,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
                                                     ))
                                                 }
                                                 {
-                                                    <MoneyRequestsComponents communityDetails={communityDetails} isCommunityHead={true} />
+                                                    <MoneyRequestsComponents handleOpenSnackbar={handleOpenSnackbar} communityDetails={communityDetails} isCommunityHead={true} changeAmount={setChangeAmount} />
                                                 }
                                             </Card>
                                         </Grid>
@@ -238,7 +242,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
                                     </Grid>
                                     <Grid container spacing={2} sx={{ marginBottom: 2 }}>
                                         <Grid item xs={12} sm={6}>
-                                            <TransactionComponent communityId={communityDetails.communityId} />
+                                            <TransactionComponent communityId={communityDetails.communityId} key={transactionKey} />
                                         </Grid>
                                     </Grid>
 
