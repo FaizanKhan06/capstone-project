@@ -104,8 +104,15 @@ function CommunityJoin({ handleOpenSnackbar }) {
                                     <DatePicker
                                         disabled
                                         fullWidth
-                                        defaultValue={dayjs('2022-04-17')}
+                                        defaultValue={dayjs(communityDetails.rule.communityStartDate.split("T")[0])}
                                         label="Community Start Date *"
+                                    />
+
+                                    <DatePicker
+                                        disabled
+                                        fullWidth
+                                        defaultValue={dayjs(communityDetails.rule.contributionDeadline.split("T")[0])}
+                                        label="Contribution DeadLine *"
                                     />
 
                                     <TextField name='termPeriod'
@@ -117,13 +124,6 @@ function CommunityJoin({ handleOpenSnackbar }) {
                                         disabled
                                         value={communityDetails.rule.interestRate}
                                         fullWidth label="Interest Rates (%)" type='number' variant='outlined' />
-
-                                    <DatePicker
-                                        disabled
-                                        fullWidth
-                                        defaultValue={dayjs('2022-04-17')}
-                                        label="Contribution Date *"
-                                    />
 
                                     <TextField name='contributionPerMonth'
                                         disabled

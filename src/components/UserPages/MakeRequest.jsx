@@ -77,7 +77,11 @@ function MakeRequest({ handleOpenSnackbar }) {
                 })
                 .then((data) => {
                     console.log(data);
-                    handleOpenSnackbar("Request Sent");
+                    if(data.requestId !== undefined){
+                        handleOpenSnackbar("Request Sent");
+                    }else{
+                        handleOpenSnackbar("You have already requested!");
+                    }
                     navigate(getAllUrls(retrieveUser().roleId).communityView, { state: { communityId: communityId } });
                     setLoading(false);
                 })

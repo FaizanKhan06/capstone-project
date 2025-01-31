@@ -1,5 +1,5 @@
 import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { retrieveUser } from '../auth';
 import getAllUrls from '../urlData';
@@ -8,11 +8,56 @@ function MakeContribution({ handleOpenSnackbar }) {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    const { communityId, email, maxAmount } = location.state || {};
-    const [amountDetails, setAmountDetails] = useState({ amount: 100.00, interest: 15.00, total: 115.00 })
+    const { communityDetails, email } = location.state || {};
+    
     let [contributionData, setContributionData] = useState({
-        email: email, communityId: communityId, transactionType: "Credit", amount: amountDetails.amount, interestAmount: amountDetails.interest
+        email: email, communityId: communityDetails.communityId, transactionType: "Credit", amount: communityDetails.rule.contributionPerMonth, interestAmount: 0
     });
+
+    useEffect(()=>{
+        getCommunityMembership();
+    },[]);
+    function getCommunityMembership() {
+    
+            if (communityDetails !== null) {
+                fetch("http://localhost:5000/api/CommunityMembership/community/user", {
+                    method: "PUT",
+                    headers: {
+                        'Authorization': 'Bearer ' + retrieveUser().jwtToken,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({communityId: communityDetails.communityId, email: email}),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            if (response.status === 404) {
+                                throw new Error("404 Error");
+                            } else {
+                                throw new Error("Network response was not ok");
+                            }
+                        }
+                        return response.text().then((text) => (text ? JSON.parse(text) : {}));
+                    })
+                    .then((data) => {
+                        let communityMembershipAmount = data[0].amount;
+                        if(communityMembershipAmount < 0){
+                            communityMembershipAmount *= -1;
+                            setContributionData({
+                                ...contributionData,
+                                interestAmount: Math.round((communityDetails.rule.interestRate * communityMembershipAmount / 100) * 100) / 100,
+                              });
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.message === "404 Error") {
+                            console.log("User Dows Not Have a Community");
+                        } else {
+                            console.error("Error during login:", error);
+                            handleOpenSnackbar("An error occurred. Please try again.");
+                        }
+                    });
+            }
+        }
 
     function handleRequestFormSubmit(event) {
         setLoading(true);
@@ -33,8 +78,8 @@ function MakeContribution({ handleOpenSnackbar }) {
             })
             .then((data) => {
                 console.log(data);
-                handleOpenSnackbar("Contribution Recorded");
-                navigate(getAllUrls(retrieveUser().roleId).communityView, { state: { communityId: communityId } });
+                handleOpenSnackbar("Contribution of ₹"+(contributionData.amount + contributionData.interestAmount)+" Recorded");
+                navigate(getAllUrls(retrieveUser().roleId).communityView, { state: { communityId: communityDetails.communityId } });
                 setLoading(false);
             })
             .catch((error) => {
@@ -59,10 +104,7 @@ function MakeContribution({ handleOpenSnackbar }) {
                     Make Contribution
                 </Typography>
                 <Typography align="center">
-                    You can only make one request | The amount can only be equal to or lesser than ₹{maxAmount}.
-                </Typography>
-                <Typography align="center">
-                    The amount can only be equal to or lesser than ₹{maxAmount}.
+                    Your Contribution is Automatically Calculated with Intrest Rates.
                 </Typography>
                 <form onSubmit={handleRequestFormSubmit}>
                     <Grid container spacing={2}>
@@ -71,7 +113,7 @@ function MakeContribution({ handleOpenSnackbar }) {
                                 type='number'
                                 label="Contribution Amount"
                                 fullWidth
-                                value={amountDetails.amount}
+                                value={contributionData.amount}
                                 variant="outlined"
                                 required
                             />
@@ -79,9 +121,9 @@ function MakeContribution({ handleOpenSnackbar }) {
                         <Grid item xs={12}>
                             <TextField
                                 type='number'
-                                label="Interest Amount"
+                                label={"Interest Amount ("+communityDetails.rule.interestRate+"%)"}
                                 fullWidth
-                                value={amountDetails.interest}
+                                value={contributionData.interestAmount}
                                 variant="outlined"
                                 required
                             />
@@ -91,7 +133,7 @@ function MakeContribution({ handleOpenSnackbar }) {
                                 type='number'
                                 label="Total Amount"
                                 fullWidth
-                                value={amountDetails.total}
+                                value={contributionData.amount + contributionData.interestAmount}
                                 variant="outlined"
                                 required
                             />

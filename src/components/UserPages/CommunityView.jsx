@@ -56,10 +56,18 @@ function CommunityView({ handleOpenSnackbar }) {
     };
 
     function handleMakeRequest() {
+        if(!communityDetails.active){
+            handleOpenSnackbar("Community not yet Active");
+            return;
+        }
         navigate(getAllUrls(retrieveUser().roleId).makeRequest, { state: { communityId: communityDetails.communityId, email: retrieveUser().email, maxAmount: communityDetails.currentAmount } });
     }
     function handleMakeContribution() {
-        navigate(getAllUrls(retrieveUser().roleId).makeContribution, { state: { communityId: communityDetails.communityId, email: retrieveUser().email, maxAmount: communityDetails.currentAmount } });
+        if(!communityDetails.active){
+            handleOpenSnackbar("Community not yet Active");
+            return;
+        }
+        navigate(getAllUrls(retrieveUser().roleId).makeContribution, { state: { communityDetails: communityDetails, email: retrieveUser().email } });
     }
     return (
         <>
@@ -81,8 +89,8 @@ function CommunityView({ handleOpenSnackbar }) {
             {
                 communityDetails !== null && !loading && (
                     <Box sx={{ paddingX: "10px", paddingY: "20px" }}>
-                        <CommunityHeaderComponent communityName={communityDetails.communityName} isPublic={communityDetails.public} />
-                        <CommunityInnerDetailsComponent currentAmount={communityDetails.currentAmount} communityStartDate={communityDetails.nextContributionDate} />
+                        <CommunityHeaderComponent communityDetails={communityDetails}/>
+                        <CommunityInnerDetailsComponent communityDetails={communityDetails}/>
                         <Grid container spacing={2} sx={{ marginBottom: 2 }}>
                             <Grid item xs={12} sm={6}>
                                 <TransactionComponent communityId={communityId} />

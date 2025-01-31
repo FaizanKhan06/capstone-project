@@ -6,7 +6,17 @@ function MoneyRequestsComponents({ handleOpenSnackbar, communityDetails, isCommu
     let [moneyRequests, setMoneyRequests] = useState([]);
     useEffect(() => {
         getCommunityMoneyRequests();
-    }, [])
+    }, []);
+    function convertDateTime(dateTime){
+        let date = dateTime.split("T")[0];
+        let time = dateTime.split("T")[1];
+        let day = date.split("-")[2];
+        let month = date.split("-")[1];
+        let year = date.split("-")[0];
+
+        let dateTimeConverted = {date: day+"/"+month+"/"+year, time: time};
+        return dateTimeConverted;
+    }
     function getCommunityMoneyRequests() {
         if (communityDetails !== null) {
             fetch("http://localhost:5000/api/requests/communities/" + communityDetails.communityId, {
@@ -77,6 +87,7 @@ function MoneyRequestsComponents({ handleOpenSnackbar, communityDetails, isCommu
                     handleOpenSnackbar("An error occurred. Please try again.");
                 }
             });
+            
     }
 
     function handleRejectRequest(requestId) {
@@ -128,7 +139,7 @@ function MoneyRequestsComponents({ handleOpenSnackbar, communityDetails, isCommu
                             aria-controls="panel2-content"
                             id="panel2-header"
                         >
-                            <Typography component="span">{requests.user.firstName + " " + requests.user.lastName}<Typography sx={{ fontSize: "12px", color: "gray" }}>has requested for funds</Typography></Typography>
+                            <Typography component="span">{requests.user.firstName + " " + requests.user.lastName}<Typography sx={{ fontSize: "12px", color: "gray" }}>has requested for funds</Typography> <span style={{fontSize: "12px", color:'gray'}}>{convertDateTime(requests.requestDateTime).date} on {convertDateTime(requests.requestDateTime).time}</span></Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>Email: {requests.user.email}</Typography>
@@ -137,7 +148,7 @@ function MoneyRequestsComponents({ handleOpenSnackbar, communityDetails, isCommu
                             <Typography>Reason: {requests.requestReason}</Typography>
                         </AccordionDetails>
                         {
-                            isCommunityHead && (
+                            isCommunityHead && requests.status === "pending" && (
                                 <AccordionActions>
                                     <Button onClick={() => handleRejectRequest(requests.requestId)} sx={{ color: 'red' }}>Reject</Button>
                                     <Button onClick={() => handleApproveRequest(requests.requestId)}>Approve</Button>
@@ -146,6 +157,11 @@ function MoneyRequestsComponents({ handleOpenSnackbar, communityDetails, isCommu
                         }
                     </Accordion>
                 ))
+            }
+            {
+                isCommunityHead && moneyRequests.length > 1 && (
+                    <Button sx={{marginY: 1}} variant='contained' fullWidth> Create Poll </Button>
+                )
             }
         </>
     )

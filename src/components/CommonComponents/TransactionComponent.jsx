@@ -1,4 +1,4 @@
-import { Box, Card, Grid, Typography } from '@mui/material'
+import { Box, Card, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { retrieveUser } from '../auth';
 
@@ -7,6 +7,16 @@ function TransactionComponent({ communityId }) {
     useEffect(() => {
         getCommunityTransactions();
     }, [])
+    function convertDateTime(dateTime){
+        let date = dateTime.split("T")[0];
+        let time = dateTime.split("T")[1];
+        let day = date.split("-")[2];
+        let month = date.split("-")[1];
+        let year = date.split("-")[0];
+
+        let dateTimeConverted = {date: day+"/"+month+"/"+year, time: time};
+        return dateTimeConverted;
+    }
     function getCommunityTransactions() {
         fetch("http://localhost:5000/api/transactions/communities/" + communityId, {
             method: "GET",
@@ -48,13 +58,18 @@ function TransactionComponent({ communityId }) {
                 }}
                 variant="h5"
             >Transactions</Typography>
-            {
-                transactions !== null && (transactions.map((transaction) => (
-                    <Box key={transaction.transactionId}>
-                        <Typography>{transaction.user.firstName} has {transaction.transactionType === "Credit" && ("made a")} {transaction.transactionType === "Credit" ? <span style={{ color: "green" }}>contribution</span> : <span style={{ color: "red" }}>borrowed</span>} {transaction.transactionType === "Debit" && ("a sum")} of ₹{transaction.amount + transaction.interestAmount}</Typography>
-                    </Box>
-                )))
-            }
+            <Table style={{width: "100%"}}>
+                <TableBody>
+                {
+                    transactions !== null && (transactions.map((transaction) => (
+                                <TableRow key={transaction.transactionId}>
+                                    <TableCell ><Typography>{transaction.user.firstName} has {transaction.transactionType === "Credit" && ("made a")} {transaction.transactionType === "Credit" ? <span style={{ color: "green" }}>contribution</span> : <span style={{ color: "red" }}>borrowed</span>} {transaction.transactionType === "Debit" && ("a sum")} of ₹{transaction.amount + transaction.interestAmount}</Typography></TableCell >
+                                    <TableCell ><span style={{fontSize: "12px", color:'gray'}}>{convertDateTime(transaction.transactionDateTime).date} on {convertDateTime(transaction.transactionDateTime).time}</span></TableCell >
+                                </TableRow>
+                    )))
+                }
+                </TableBody>
+            </Table>
         </Card>
     )
 }

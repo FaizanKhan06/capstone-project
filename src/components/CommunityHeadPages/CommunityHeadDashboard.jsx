@@ -23,6 +23,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
     }, []);
     useEffect(() => {
         getCommunityJoinRequests();
+
     }, [communityDetails])
     function getCommunityDetails() {
         fetch("http://localhost:5000/api/communities/communityHead/" + retrieveUser().email, {
@@ -185,7 +186,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
                 communityDetails !== null && !loading && (
                     <Box sx={{ paddingX: "10px", paddingY: "20px" }}>
 
-                        <CommunityHeaderComponent communityName={communityDetails.communityName} isPublic={communityDetails.public} />
+                        <CommunityHeaderComponent communityDetails={communityDetails} />
 
                         {
                             communityDetails.rule === null ?
@@ -195,7 +196,7 @@ function CommunityHeadDashboard({ handleOpenSnackbar }) {
                                 </>
                                 :
                                 <>
-                                    <CommunityInnerDetailsComponent currentAmount={communityDetails.currentAmount} communityStartDate={communityDetails.nextContributionDate} />
+                                    <CommunityInnerDetailsComponent communityDetails={communityDetails} />
                                     <Grid container spacing={2} sx={{ marginBottom: 2 }}>
                                         <Grid item xs={12} sm={6}>
                                             <Card sx={{ backgroundColor: "#ECECEC", height: "300px", padding: 1, overflowY: "scroll" }}>
