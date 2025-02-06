@@ -1,10 +1,12 @@
-import { Typography } from '@mui/material'
-import React from 'react'
+import React, { useRef, useState, useEffect } from "react";
+import Background from "./Background";
+const HomePage = () => {
+  return (
+    <>
+      <Background />
+      <h1>Hello</h1>
+    </>
+  );
+};
 
-function HomePage() {
-    return (
-        <Typography>HomePage</Typography>
-    )
-}
-
-export default HomePage
+export default HomePage;

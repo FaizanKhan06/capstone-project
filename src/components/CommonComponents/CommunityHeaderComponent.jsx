@@ -14,7 +14,7 @@ function CommunityHeaderComponent({ communityDetails }) {
                         }}
                         variant="h5"
                     >
-                        {communityDetails.communityName} <span style={{color: 'gray'}}>{!communityDetails.active && ("(Not Yet Active)")} {!communityDetails.active && communityDetails.deleted && ("(Not Active!! Ended)")} </span>
+                        {communityDetails.communityName} <span style={{color: 'gray'}}>{!communityDetails.active && ( !communityDetails.deleted ? "(Not Yet Active)" : "(Not Active!! Ended)")} </span>
                     </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} sx={{ textAlign: { xs: 'left', sm: 'right' } }}> {/* Left on mobile, right on larger screens */}
